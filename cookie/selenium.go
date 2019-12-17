@@ -27,8 +27,7 @@ func getCookies(index string) ([]selenium.Cookie, error) {
 	// running).
 	service, err := selenium.NewChromeDriverService(seleniumPath, port, []selenium.ServiceOption{}...)
 	if err != nil {
-		fmt.Println("NewChromeDriverService")
-		panic(err) // panic is used only as an example and is not otherwise recommended.
+		return nil, fmt.Errorf("NewChromeDriverService%w", err)
 	}
 	defer service.Stop()
 
@@ -42,21 +41,16 @@ func getCookies(index string) ([]selenium.Cookie, error) {
 		},
 	}
 	caps.AddChrome(chromeCaps)
-
 	wd, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("NewRemote%w", err)
 	}
-
 	defer wd.Quit()
 
 	// Navigate to the simple playground interface.
 	if err := wd.Get(index); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("wd.Get%w", err)
 	}
 	cookies, _ := wd.GetCookies()
-	// deviceId, _ := wd.GetCookie(railDeviceId)
-	//expiration, _ := wd.GetCookie(railExpiration)
-
 	return cookies, nil
 }
