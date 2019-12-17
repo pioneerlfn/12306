@@ -3,6 +3,7 @@ package cookie
 import (
 	"fmt"
 
+	"github.com/spf13/viper"
 	"github.com/tebeka/selenium"
 	"github.com/tebeka/selenium/chrome"
 )
@@ -12,20 +13,21 @@ const (
 	railExpiration = "RAIL_EXPIRATION"
 )
 
-func getCookies(index string) ([]selenium.Cookie, error) {
-	// TODO: 从配置文件读取
-	const (
-		// These paths will be different on your system.
-		//seleniumPath = "vendor/selenium-server-standalone-3.4.jar"
-		//geckoDriverPath = "vendor/geckodriver-v0.18.0-linux64"
-		seleniumPath = "chromedriver"
-		port         = 9999
-	)
+type RunMode string
 
-	//selenium.SetDebug(true)
+// 似乎有点别扭，找机会改进
+const (
+	Debug   RunMode = "DEBUG"
+	Release RunMode = "RELEASE"
+	Test    RunMode = "TEST"
+)
+
+func getCookies(index string) ([]selenium.Cookie, error) {
+
+	selenium.SetDebug(viper.Get("runmode") == Debug)
 	// Start a Selenium WebDriver server instance (if one is not already
 	// running).
-	service, err := selenium.NewChromeDriverService(seleniumPath, port, []selenium.ServiceOption{}...)
+	service, err := selenium.NewChromeDriverService(viper.GetString("selenium.path"), viper.GetInt("selenium.port"), []selenium.ServiceOption{}...)
 	if err != nil {
 		return nil, fmt.Errorf("NewChromeDriverService%w", err)
 	}

@@ -1,0 +1,10 @@
+runmode: TEST
+
+auth:
+    USRE: hantcx
+    PWD:
+
+selenium:
+  path: chromedriver
+  port: 9999
+
