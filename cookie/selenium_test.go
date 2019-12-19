@@ -7,7 +7,7 @@ import (
 
 func TestGetCookies(t *testing.T) {
 	index := "https://www.12306.cn/index/index.html"
-	cookies, err := getCookies(index)
+	cookies, err := GetCookies(index)
 	if err != nil {
 		log.Fatal(err)
 	}
