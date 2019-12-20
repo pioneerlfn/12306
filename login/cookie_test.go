@@ -1,4 +1,4 @@
-package cookie
+package login
 
 import (
 	"log"
@@ -6,8 +6,7 @@ import (
 )
 
 func TestGetCookies(t *testing.T) {
-	index := "https://www.12306.cn/index/index.html"
-	cookies, err := GetCookies(index)
+	cookies, err := GetCookies()
 	if err != nil {
 		log.Fatal(err)
 	}

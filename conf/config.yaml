@@ -1,13 +1,17 @@
 runmode: DEBUG
 
+host: https://kyfw.12306.cn
+
+
 auth:
-    USRE: hantcx
-    PWD:
+    user: test
+    pwd: testxxx
+    appid: otn
 
 selenium:
   path: chromedriver
   port: 9999
 
 sleep:
-  start: 17:07
+  start: 6:00
   stop: 23:00

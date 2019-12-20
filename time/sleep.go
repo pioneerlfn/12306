@@ -30,10 +30,12 @@ func SleepIfNeeded() {
 	if ts >= startTs && ts < stopTs {
 		return
 	}
+
+	// 不在12306开放时间段内，sleep.
 	var needSleep time.Duration
 	if ts < startTs {
 		needSleep = time.Duration(startTs-ts) * time.Second
-	} else if ts > stopTs {
+	} else { // ts >= stopTs
 		needSleep = time.Duration(startTs +
 			int64(time.Hour*time.Duration(startHour+24-stopHour)+
 				time.Minute*time.Duration(startMin-stopMin)) - ts)
