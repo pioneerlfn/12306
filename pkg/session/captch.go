@@ -8,6 +8,7 @@ package session
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 )
 
@@ -35,6 +36,11 @@ type Captcha struct {
 }
 
 func (s *Session) GetCaptcha() (*Captcha, error) {
+	log.Println("下载验证码...")
+
+
+
+
 
 	// TODO:
 	return &Captcha{}, nil

@@ -39,7 +39,9 @@ type Conf struct {
 
 // TODO:合理的错误处理
 func (s *Session) LogIn() error {
-	time.SleepIfNeeded()
+	if RunMode(viper.GetString("mode")) != Test {
+		time.SleepIfNeeded()
+	}
 
 	// 获取、识别验证码
 	var answer []string
