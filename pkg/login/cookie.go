@@ -74,7 +74,7 @@ func getCookies(index string) ([]selenium.Cookie, error) {
 		return nil, fmt.Errorf("wd.Get%w", err)
 	}
 	// 给wd一点时间，获取cookies.
-	time.Sleep(time.Second * 3)
+	time.Sleep(time.Second * 10)
 	cookies, _ := wd.GetCookies()
 
 	return cookies, nil

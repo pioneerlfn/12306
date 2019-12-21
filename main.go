@@ -2,14 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
-	"github.com/pioneerlfn/12306/login"
+	"github.com/pioneerlfn/12306/config"
+	"github.com/pioneerlfn/12306/pkg/session"
+
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-
-	"github.com/pioneerlfn/12306/config"
 )
 
 var (
@@ -25,19 +24,12 @@ func main() {
 		panic(err)
 	}
 
-	err := login.Login()
-
-	// cookies, err := login.GetCookies()
+	s := session.NewSelect()
+	err := s.Config()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	/*for _, cookie := range cookies {
-		if cookie.Name == "RAIL_EXPIRATION" || cookie.Name == "RAIL_DEVICEID" {
-			log.Println(cookie.Name, ":", cookie.Value)
-		}
-	}
-
-	*/
+	s.Run()
 
 	// 测试热更新
 	for {

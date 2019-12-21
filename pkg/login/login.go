@@ -8,15 +8,26 @@ package login
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"strings"
+
 	"net/http"
 	"net/url"
+
 
 	// "github.com/pioneerlfn/12306/time"
 	"github.com/spf13/viper"
 )
+
+type GoLogin struct {
+
+}
+
+
+
+
 
 func Login() error {
 	// time.SleepIfNeeded()
@@ -81,18 +92,28 @@ func login(authInfo *AuthInfo) error {
 	)
 
 	cookie, err := GetCookies()
+	log.Println("len(cookies):",len(cookie))
 	if err != nil {
 		return fmt.Errorf("login:%w", err)
 	}
-	cks , err := json.Marshal(cookie)
-	if err != nil {
-		return fmt.Errorf("login:%w", err)
+	var cookieVal []string
+	cookieVal = append(cookieVal, "BIGipServerpool_statistics=635503114.44582.0000")
+	for _, ck := range cookie {
+		fmt.Println(ck.Name, ck.Value, ck.Expiry, ck.Domain)
+		if ck.Name == railExpiration {
+			cookieVal = append(cookieVal, strings.Join([]string{ck.Name,ck.Value}, "="))
+		}
 	}
+	cookieVal = append(cookieVal, "RAIL_DEVICEID=FMKAiW_-bbqIc1q9UdMLwI0kBLV7hk1AIctjmhOclmG0Ymn3MXdXocVC92xn-5UgE-Xc123nHAo4iAcasT844vKj9gf2pVHwmK3fAzm2tUaqy0jtl1e7K3j2Hld-xd5lvC8dCXwkKR3ujaumpqJ_2iTtKDCIvMX1")
 
-	request.Header.Set("cookie",string(cks))
-	request.Header.Set("content-type","application/x-www-form-urlencoded")
+	request.Header.Set("Cookie",strings.Join(cookieVal, "; "))
+	request.Header.Set("Content-type","application/x-www-form-urlencoded")
 	request.Header.Set("Referer", "https://kyfw.12306.cn/otn/resources/login.html")
+	request.Header.Set("User-Agent", "Paw/3.1.10 (Macintosh; OS X/10.12.6)")
+	request.Header.Set("Host","kyfw.12306.cn")
 
+	fmt.Println("req:",request)
+	return nil
 	rsp, err := http.DefaultClient.Do(request)
 	if err != nil {
 		return fmt.Errorf("login: %w", err)
@@ -103,6 +124,9 @@ func login(authInfo *AuthInfo) error {
 		return errors.New("login failed")
 	}
 
+	for k, v := range rsp.Header {
+		fmt.Println(k,":", v)
+	}
 	return nil
 }
 
