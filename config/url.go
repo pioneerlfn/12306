@@ -9,142 +9,148 @@ package config
 import (
 	"log"
 
+	"github.com/pioneerlfn/12306/pkg/session"
 	"github.com/spf13/viper"
 )
 
-var Urls map[string]map[string]interface{}
+var Urls map[string]session.Conf
 var Host string
 
 func init() {
 	log.Println("init config...")
 	Host = viper.GetString("host")
-	Urls = map[string]map[string]interface{}{
+	Urls = map[string]session.Conf{
 		"auth": {
-			"req_url": "/passport/web/auth/uamtk",
-			"req_type": "post",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
-			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": true,
-			"is_json": true,
+			Url:         "/passport/web/auth/uamtk",
+			Method:      "post",
+			Referer:     "https://kyfw.12306.cn/otn/resources/login.html",
+			Host:        "kyfw.12306.cn",
+			ContentType: "1",
+			Retry:       1,
+			ReTime:      10,
+			STime:       0.1,
+			IsLogger:    true,
+			Isjson:      true,
 		},
-		// 登录接口
-		"uamtk-static": {
-			"req_url": "/passport/web/auth/uamtk-static",
-			"req_type": "get",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
-			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 3,
-			"s_time": 0.1,
-			"is_logger": true,
-			"is_json": true,		
-		},
-
 		"login": {
-			"req_url": "/passport/web/login",
-			"req_type": "post",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
-			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.5,
-			"is_logger": true,
-			"is_json": true,
-
+			Url:         "/passport/web/login",
+			Method:      "post",
+			Referer:     "https://kyfw.12306.cn/otn/resources/login.html",
+			Host:        "kyfw.12306.cn",
+			ContentType: "1",
+			Retry:       1,
+			ReTime:      10,
+			STime:       0.1,
+			IsLogger:    true,
+			Isjson:      true,
 		},
+
+
+/*		// 登录接口
+		"uamtk-static": {
+			"req_url":      "/passport/web/auth/uamtk-static",
+			"req_type":     "get",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
+			"Content-Type": 1,
+			"re_try":       10,
+			"re_time":      3,
+			"s_time":       0.1,
+			"is_logger":    true,
+			"is_json":      true,
+		},
+
 
 		"left_ticket_init": {
-			"req_url": "/otn/leftTicket/init",
-			"req_type": "post",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
+			"req_url":      "/otn/leftTicket/init",
+			"req_type":     "post",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
 			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": false,
-			"is_json": false,
+			"re_try":       10,
+			"re_time":      1,
+			"s_time":       0.1,
+			"is_logger":    false,
+			"is_json":      false,
 		},
 		// 登录验证码
 		"getCodeImg": {
-			"req_url": "/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&{0}",
-			"req_type": "get",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
+			"req_url":      "/passport/captcha/captcha-image?login_site=E&module=login&rand=sjrand&{0}",
+			"req_type":     "get",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
 			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": false,
-			"is_json": false,
-			"not_decode": true,
+			"re_try":       10,
+			"re_time":      1,
+			"s_time":       0.1,
+			"is_logger":    false,
+			"is_json":      false,
+			"not_decode":   true,
 		},
 		// 登录验证码
 		"getCodeImg1": {
-			"req_url": "/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&{0}&callback=jQuery19108016482864806321_1554298927290&_=1554298927293",
-			"req_type": "get",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
+			"req_url":      "/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&{0}&callback=jQuery19108016482864806321_1554298927290&_=1554298927293",
+			"req_type":     "get",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
 			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": true,
-			"is_json": false,
+			"re_try":       10,
+			"re_time":      1,
+			"s_time":       0.1,
+			"is_logger":    true,
+			"is_json":      false,
 		},
 		// 验证码校验
 		"codeCheck": {
-			"req_url": "/passport/captcha/captcha-check",
-			"req_type": "post",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
+			"req_url":      "/passport/captcha/captcha-check",
+			"req_type":     "post",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
 			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": true,
-			"is_json": false,
+			"re_try":       10,
+			"re_time":      1,
+			"s_time":       0.1,
+			"is_logger":    true,
+			"is_json":      false,
 		},
 		// 验证码校验
 		"codeCheck1": {
-			"req_url": "/passport/captcha/captcha-check?callback=jQuery19108016482864806321_1554298927290&answer={0}&rand=sjrand&login_site=E&_={1}",
-			"req_type": "get",
-			"Referer": "https://kyfw.12306.cn/otn/resources/login.html",
-			"Host": "kyfw.12306.cn",
+			"req_url":      "/passport/captcha/captcha-check?callback=jQuery19108016482864806321_1554298927290&answer={0}&rand=sjrand&login_site=E&_={1}",
+			"req_type":     "get",
+			"Referer":      "https://kyfw.12306.cn/otn/resources/login.html",
+			"Host":         "kyfw.12306.cn",
 			"Content-Type": 1,
-			"re_try": 10,
-			"re_time": 1,
-			"s_time": 0.1,
-			"is_logger": true,
-			"is_json": false,
+			"re_try":       10,
+			"re_time":      1,
+			"s_time":       0.1,
+			"is_logger":    true,
+			"is_json":      false,
 		},
 		// 登录页面
 		"loginInit": {
-			"req_url": "/otn/login/init",
-			"req_type": "get",
-			"Referer": "https://kyfw.12306.cn/otn/index/init",
-			"Host": "kyfw.12306.cn",
-			"re_try": 1,
-			"re_time": 1,
-			"s_time": 0.1,
+			"req_url":   "/otn/login/init",
+			"req_type":  "get",
+			"Referer":   "https://kyfw.12306.cn/otn/index/init",
+			"Host":      "kyfw.12306.cn",
+			"re_try":    1,
+			"re_time":   1,
+			"s_time":    0.1,
 			"is_logger": false,
-			"is_json": false,
+			"is_json":   false,
 		},
+		"loginConf": {
+			"req_url":   "/otn/login/conf",
+			"req_type":  "post",
+			"Referer":   "https://kyfw.12306.cn/otn/leftTicket/init",
+			"Host":      "kyfw.12306.cn",
+			"re_try":    10,
+			"re_time":   0.3,
+			"s_time":    0.1,
+			"is_logger": true,
+			"is_json":   true,
+		},*/
 	}
 }
-
-
-
-
-
-
-
 
 /*"loginInitCdn": {  # 登录页面
 "req_url": "/otn/login/init",

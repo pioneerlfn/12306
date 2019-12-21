@@ -4,7 +4,7 @@
 @File : login_test
 */
 
-package login
+package session
 
 import (
 	"testing"

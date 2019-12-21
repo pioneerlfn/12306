@@ -1,4 +1,4 @@
-package login
+package session
 
 import (
 	"fmt"
@@ -36,8 +36,6 @@ func GetCookies() ([]selenium.Cookie, error) {
 	cookies, err := getCookies(index)
 	return cookies, err
 }
-
-
 
 func getCookies(index string) ([]selenium.Cookie, error) {
 

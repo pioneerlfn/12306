@@ -15,7 +15,6 @@ var (
 	cfg = pflag.StringP("config", "c", "", "ticket assistant config file path.")
 )
 
-
 func main() {
 	pflag.Parse()
 

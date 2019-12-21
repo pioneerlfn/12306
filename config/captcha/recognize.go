@@ -5,6 +5,3 @@
 */
 
 package captcha
-
-
-
