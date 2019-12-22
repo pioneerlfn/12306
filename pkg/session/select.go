@@ -18,7 +18,7 @@ type Session struct {
 	AutoCodeType                  int
 	Client                        *http.Client
 	Urls                          map[string]map[string]interface{}
-	Login                         login.GoLogin
+	LogIn                         GoLogin
 	CDNList                       []string
 	Cookies                       string
 	QueryURL                      string
@@ -35,20 +35,14 @@ func NewSelect() *Session {
 	}
 }
 
-func (s *Session) Config() error {
-
-	return nil
-}
-
 func (s *Session) Run() {
-	err := s.LogIn()
+	err := s.Login()
 	if err != nil {
 		panic(err)
 	}
-	s.QueryTickets()
-	s.Order()
+	/*s.QueryTickets()
+	s.Order()*/
 }
-
 
 /*func (s *Session) login() error {
 	var err error
@@ -86,9 +80,10 @@ func (s *Session) SetCookies() error {
 	cookieVal = append(cookieVal, "BIGipServerpool_statistics=635503114.44582.0000")
 	for _, ck := range cookie {
 		fmt.Println(ck.Name, ck.Value, ck.Expiry, ck.Domain)
-		if ck.Name == railExpiration {
+		if ck.Name == railExpiration || ck.Name == railDeviceId {
 			cookieVal = append(cookieVal, strings.Join([]string{ck.Name, ck.Value}, "="))
 		}
 	}
+	s.Cookies = strings.Join(cookieVal, "; ")
 	return nil
 }

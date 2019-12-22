@@ -7,8 +7,13 @@
 package session
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -17,6 +22,7 @@ type Point struct {
 	Y int
 }
 
+// TODO:取个更适合的名字
 var Offsets [8]Point
 
 func init() {
@@ -30,20 +36,57 @@ func init() {
 	Offsets[0] = Point{256, 149}
 }
 
-
 type Captcha struct {
-	base64 string
+	base64 []byte
 }
 
 func (s *Session) GetCaptcha() (*Captcha, error) {
 	log.Println("下载验证码...")
+	imgPath := "tkcode.png"
+	//conf := config.Urls["getCaptcha"]
+	resp, err := http.Get("https://kyfw.12306.cn/passport/captcha/captcha-image64?login_site=E&module=login&rand=sjrand&callback=jQuery19108016482864806321_1554298927290&_=1554298927293")
+	// body, err := SendRequest(s, &conf)
+	if err != nil {
+		return nil, fmt.Errorf("http.Get: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code error: %d", resp.StatusCode)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("ioutil.ReadAll: %w", err)
+	}
 
+	start := bytes.IndexByte(body, '{')
+	end := bytes.IndexByte(body, '}')
+	imgInfo := body[start:end+1]
 
+	captchaRes := new(CaptchaRes)
+	err = json.Unmarshal(imgInfo, captchaRes)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshal: %w", err)
+	}
 
+	if captchaRes.ResultCode != "0" {
+		return nil, fmt.Errorf("result error: %v", captchaRes.ResultMessage)
+	}
 
+	file, err := os.Create(imgPath)
+	if err != nil {
+		return nil, fmt.Errorf("os.Create: %w", err)
+	}
+	defer file.Close()
 
-	// TODO:
-	return &Captcha{}, nil
+	w, err := file.Write(captchaRes.Image)
+	if err != nil {
+		return nil, fmt.Errorf("write file: %w", err)
+	}
+	if w != len(captchaRes.Image) {
+		return nil, fmt.Errorf("paritially write")
+	}
+
+	return &Captcha{body}, nil
 }
 
 func GetCaptchaAnswer(captcha *Captcha) ([]string, error) {
@@ -71,6 +114,14 @@ func GetCaptchaAnswer(captcha *Captcha) ([]string, error) {
 	return answer, nil
 }
 
+func DecodeHayStack(c *Captcha) ([]string, error) {
+	return nil, nil
+}
+
+func DecodeNeedle(c *Captcha) ([]string, error) {
+	return nil, nil
+}
+
 func convertToCoordinate(items []int) []string {
 	var res []string
 	for it := range items {
@@ -80,12 +131,9 @@ func convertToCoordinate(items []int) []string {
 	return res
 }
 
-
-
 func DecodeCaptcha(captcha *Captcha) (string, error) {
 	return "", nil
 }
-
 
 func (s *Session) VerifyCaptcha() error {
 	return nil

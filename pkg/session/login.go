@@ -7,68 +7,64 @@
 package session
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
+	"log"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/pioneerlfn/12306/config"
-	"github.com/pioneerlfn/12306/pkg/time"
-	// "github.com/pioneerlfn/12306/time"
+	. "github.com/pioneerlfn/12306/pkg/time"
+
 	"github.com/spf13/viper"
 )
 
-type GoLogin struct {
-}
-
-
-type Conf struct {
-	Url         string
-	Method      string
-	Referer     string
-	Host        string
-	Body        string
-	ContentType string
-	Retry       int
-	ReTime      int
-	STime       float64
-	IsLogger    bool
-	Isjson      bool
-}
-
 // TODO:合理的错误处理
-func (s *Session) LogIn() error {
+func (s *Session) Login() error {
 	if RunMode(viper.GetString("mode")) != Test {
-		time.SleepIfNeeded()
+		SleepIfNeeded()
 	}
 
-	// 获取、识别验证码
-	var answer []string
-	for {
-		if NeedCaptcha(nil) { // todo:fix
+	need, err := s.NeedCaptcha()
+	if err != nil {
+		return fmt.Errorf("NeeedCaptcha: %w", err)
+	}
+	if need {
+		// 获取、识别验证码
+		var answer []string
+		for {
+			time.Sleep(2 * time.Second)
 			// 获取验证码
 			rawCaptcha, err := s.GetCaptcha()
 			if err != nil {
-				panic(err)
+				log.Printf("获取验证码失败:%v\n", err)
+				log.Println("重试...")
+				continue
 			}
+			log.Println("下载验证码成功...")
 			// 获取验证码答案
 			answer, err = GetCaptchaAnswer(rawCaptcha)
 			if err != nil {
-				panic(err)
+				log.Printf("获取验证码答案失败:%v\n", err)
+				log.Println("重试...")
+				continue
 			}
+			log.Println("验证码解码成功...")
+			// 尝试登陆
+			err = s.login(answer)
+			if err != nil {
+				log.Printf("登录失败:%v\n", err)
+				log.Println("重试...")
+				continue
+			}
+			return nil
 		}
-		// 尝试登陆
-		err := s.login(answer)
-		if err == nil {
-			break
-		}
-		// TODO:根据错误类型不同选择合适地处理方式
 	}
+	// TODO:不需要验证码的时候？似乎没有
 	return nil
 }
-
-
 
 func (s *Session) login(answer []string) error {
 	data := make(url.Values)
@@ -91,21 +87,31 @@ func (s *Session) login(answer []string) error {
 	loginConf := config.Urls["login"]
 	loginConf.Body = body
 
-	rsp, err := SendRequest(s, &loginConf)
+	res, err := SendRequest(s, &loginConf)
 	if err != nil {
 		return fmt.Errorf("login: %w", err)
 	}
-	defer rsp.Body.Close()
-
-	if rsp.StatusCode != http.StatusOK {
-		return errors.New("login failed")
-	}
+	fmt.Printf("%#v\n", string(res))
 
 	return nil
 }
 
-// 是否需要识别验证码
-func NeedCaptcha(c *Conf) bool {
+// NeedCaptcha判断是否需要识别验证码
+// 只有在error为nil的情况下才有意义.
+func (s *Session) NeedCaptcha() (bool, error) {
+	conf := config.Urls["loginConf"]
+	body, err := SendRequest(s, &conf)
 
-	return true
+	cf := new(LoginConf)
+	err = json.Unmarshal(body, cf)
+	if err != nil {
+		return false, fmt.Errorf("json.Unmarshal: %w", err)
+	}
+
+	if cf.Data.IsLoginPassCode == "N" {
+		log.Println("不需要验证码...")
+		return false, nil
+	}
+	log.Println("需要验证码:", cf.Data.IsLoginPassCode)
+	return true, nil
 }

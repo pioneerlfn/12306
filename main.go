@@ -24,7 +24,7 @@ func main() {
 	}
 
 	s := session.NewSelect()
-	err := s.Config()
+	err := s.SetCookies()
 	if err != nil {
 		panic(err)
 	}
